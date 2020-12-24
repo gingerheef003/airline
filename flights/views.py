@@ -1,4 +1,5 @@
 from django import forms
+from django.http.response import Http404
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -12,7 +13,11 @@ def index(request):
     })
 
 def flight(request, flight_id):
-    flight = Flight.objects.get(pk=flight_id)                 #pk is primary key
+    try:
+        flight = Flight.objects.get(pk=flight_id)              #pk is primary key
+
+    except Flight.DoesNotExist:
+        raise Http404("Flight not found.")
     return render(request, "flights/flight.html", {
         "flight": flight,
         "passengers": flight.passengers.all(),
